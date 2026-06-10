@@ -163,11 +163,34 @@ Set via the `displayMode` property (`list` | `card` | `carousel` | `grid`).
 
 #### List Mode (`list`)
 
-Records rendered as horizontally-wrapped field rows inside a bordered container.
+Records rendered as uniform grid-column rows inside a bordered container. Every row shares an
+identical CSS column template, so values line up cleanly regardless of content length.
 
+**Column layout**
+- Each row uses a CSS Grid (`display: grid`) wrapper (`.drd-list-columns`) driven by the
+  `--drd-list-col-template` CSS custom property injected by the `listViewStyle` JS getter.
+- Template formula: the **first column gets `2fr`** (typically the Name / primary field),
+  every subsequent inline column gets `1fr` — giving the name more breathing room while
+  keeping other fields evenly spaced.
+- The template is set once on the `.drd-list-view` container and inherited by every row,
+  guaranteeing pixel-identical column widths across all records.
+
+**Long-text / textarea fields**
+- Fields whose Salesforce `Schema.DisplayType` resolves to `TEXTAREA`, `RICHTEXTAREA`, or
+  `LONGTEXTAREA` are automatically classified as *long-text* fields.
+- Long-text fields are **excluded from the inline column grid** and instead rendered as a
+  full-width second row (`.drd-list-long-text`) below the column grid, separated by a
+  subtle `border-top` rule.
+- When a long-text field has no value, its row is hidden entirely — no empty "DESCRIPTION —"
+  column appearing inline alongside the other fields.
+- Place long-text fields **last in the `fieldList` CSV** to keep them visually grouped; the
+  component processes fields in CSV order.
+
+**Other behaviour**
 - Alternating row background via CSS `color-mix()` against the theme accent
 - Hover: indent `padding-left` to `28px` + `4px` left inset border in accent colour
-- All fields shown (label above value)
+- All non-long-text fields shown inline (label above value); badge fields render as pills
+- On mobile (≤ 600 px) the column grid collapses to a single `1fr` column (fields stack)
 
 #### Card Mode (`card`)
 
