@@ -297,15 +297,13 @@
 
 .drd-list-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
+    flex-direction: column;
     padding: 14px 20px;
     border-bottom: 1px solid var(--drd-card-border);
     cursor: pointer;
     transition: var(--drd-transition);
     outline: none;
     background: var(--drd-card-bg);
-    align-items: center;
 }
 
 .drd-list-row:last-child {
@@ -323,10 +321,34 @@
     box-shadow: inset 4px 0 0 var(--drd-accent);
 }
 
+/* Inline column grid — column template driven by --drd-list-col-template
+   set as inline style on .drd-list-view from the listViewStyle JS getter.
+   Fallback: equal auto-fit columns with a 150px minimum. */
+.drd-list-columns {
+    display: grid;
+    grid-template-columns: var(--drd-list-col-template, repeat(auto-fit, minmax(150px, 1fr)));
+    gap: 0;
+    width: 100%;
+    align-items: start;
+}
+
+/* Full-width long-text row rendered below the column grid */
+.drd-list-long-text {
+    width: 100%;
+    padding-top: 8px;
+    margin-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--drd-card-border) 60%, transparent);
+}
+
 .drd-list-field {
     display: flex;
     flex-direction: column;
-    min-width: 100px;
+    padding: 4px 16px 4px 0;
+}
+
+/* Long-text variant — spans full row width */
+.drd-list-field--full {
+    padding: 4px 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -678,13 +700,11 @@
         width: 100%;
     }
 
-    .drd-list-row {
-        flex-direction: column;
-        gap: 10px;
+    .drd-list-columns {
+        grid-template-columns: 1fr;
     }
 
     .drd-list-field {
-        min-width: unset;
         width: 100%;
     }
 

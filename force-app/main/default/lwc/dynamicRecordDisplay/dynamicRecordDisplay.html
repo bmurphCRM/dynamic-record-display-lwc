@@ -39,7 +39,7 @@
 
             <!-- ══ LIST VIEW ═════════════════════════════════════════════════ -->
             <template if:true={isListMode}>
-                <div class="drd-list-view" role="list">
+                <div class="drd-list-view" role="list" style={listViewStyle}>
                     <template for:each={processedRecords} for:item="record">
                         <div
                             key={record.Id}
@@ -50,14 +50,33 @@
                             onclick={handleRecordClick}
                             onkeydown={handleKeyDown}
                         >
-                            <template for:each={record.fields} for:item="field">
-                                <div key={field.name} class="drd-list-field">
-                                    <span class="drd-field-label">{field.label}</span>
-                                    <template if:true={field.isBadge}>
-                                        <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
-                                    </template>
-                                    <template if:true={field.isNotBadge}>
-                                        <span class="drd-field-value">{field.displayValue}</span>
+                            <!-- ── Inline column fields (consistent grid) ── -->
+                            <div class="drd-list-columns">
+                                <template for:each={record.inlineFields} for:item="field">
+                                    <div key={field.name} class="drd-list-field">
+                                        <span class="drd-field-label">{field.label}</span>
+                                        <template if:true={field.isBadge}>
+                                            <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                        </template>
+                                        <template if:true={field.isNotBadge}>
+                                            <span class="drd-field-value">{field.displayValue}</span>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                            <!-- ── Long-text fields (full-width second row) ── -->
+                            <template if:true={record.hasLongTextFields}>
+                                <div class="drd-list-long-text">
+                                    <template for:each={record.longTextFields} for:item="field">
+                                        <div key={field.name} class="drd-list-field drd-list-field--full">
+                                            <span class="drd-field-label">{field.label}</span>
+                                            <template if:true={field.isBadge}>
+                                                <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                            </template>
+                                            <template if:true={field.isNotBadge}>
+                                                <span class="drd-field-value">{field.displayValue}</span>
+                                            </template>
+                                        </div>
                                     </template>
                                 </div>
                             </template>

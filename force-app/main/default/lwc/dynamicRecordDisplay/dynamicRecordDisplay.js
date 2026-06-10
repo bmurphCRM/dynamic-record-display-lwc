@@ -2,6 +2,9 @@ import { LightningElement, api, track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getRecords from '@salesforce/apex/DRD_RecordDisplayController.getRecords';
 
+// ─── Long-text field types that should render full-width below inline columns ──
+const LONG_TEXT_TYPES = new Set(['textarea', 'richtextarea', 'longtextarea', 'encryptedstring']);
+
 // ─── Badge Auto-Color Palette (12 distinct accessible colors) ─────────────────
 const BADGE_AUTO_COLORS = [
     { bg: '#0070D2', text: '#FFFFFF' },
@@ -267,10 +270,42 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
 
     // ── Display Mode Getters ──────────────────────────────────────────────────
 
-    get isListMode() { return this.displayMode === 'list'; }
+    get isListMode()     { return this.displayMode === 'list';     }
     get isCardMode() { return this.displayMode === 'card'; }
     get isCarouselMode() { return this.displayMode === 'carousel'; }
     get isGridMode() { return this.displayMode === 'grid'; }
+
+    // ── List View Column Layout ───────────────────────────────────────────────
+
+    /**
+     * Returns the number of "inline" (non-long-text) fields that will render
+     * as grid columns in the list view. Used to build a consistent column
+     * template across all rows.
+     */
+    get _inlineFieldCount() {
+        return (this.fieldList || '')
+            .split(',')
+            .map(f => f.trim())
+            .filter(f => f && this._fieldLabels[f])
+            .filter(f => !LONG_TEXT_TYPES.has((this._fieldTypes[f] || '').toLowerCase()))
+            .length;
+    }
+
+    /**
+     * Inline style applied to `.drd-list-view` so every row's CSS grid
+     * shares an identical column template — the first column gets 2fr
+     * (typically the Name / primary field) and every subsequent column
+     * gets 1fr.  A fallback of `repeat(auto-fit, minmax(150px, 1fr))` is
+     * used while field metadata is still loading.
+     */
+    get listViewStyle() {
+        const count = this._inlineFieldCount;
+        if (count <= 0) return '';
+        const cols = count === 1
+            ? '1fr'
+            : `2fr ${Array(count - 1).fill('1fr').join(' ')}`;
+        return `--drd-list-col-template: ${cols};`;
+    }
 
     // ── Theme / Styling Getters ───────────────────────────────────────────────
 
@@ -547,6 +582,10 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
                 ? allFields.filter(f => f.name !== primaryFieldName)
                 : allFields;
 
+            // Split fields into inline columns vs full-width long-text rows
+            const inlineFields    = allFields.filter(f => !LONG_TEXT_TYPES.has((this._fieldTypes[f.name] || '').toLowerCase()));
+            const longTextFields  = allFields.filter(f =>  LONG_TEXT_TYPES.has((this._fieldTypes[f.name] || '').toLowerCase()));
+
             // Badge-only fields for grid view overlay
             const badgeOnlyFields = allFields.filter(f => f.isBadge);
 
@@ -564,6 +603,9 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
                 primaryValue: primaryValue,
                 fields: allFields,
                 secondaryFields: secondaryFields,
+                inlineFields: inlineFields,
+                longTextFields: longTextFields,
+                hasLongTextFields: longTextFields.length > 0,
                 badgeOnlyFields: badgeOnlyFields,
                 hasBadgeFields: badgeOnlyFields.length > 0,
                 gridItemStyle: gridItemStyle,
