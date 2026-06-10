@@ -394,6 +394,80 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
         }
     }
 
+    // ── Field Value Formatter ─────────────────────────────────────────────────
+
+    /**
+     * Formats a raw Salesforce field value according to its display type.
+     * @param {*}      rawValue  - The raw value from the record.
+     * @param {string} fieldType - The Apex Schema.DisplayType string (e.g. 'Currency').
+     * @returns {string} Formatted display string.
+     */
+    _formatFieldValue(rawValue, fieldType) {
+        if (rawValue === null || rawValue === undefined || rawValue === '') return '';
+
+        const type = (fieldType || '').toLowerCase();
+
+        try {
+            switch (type) {
+                case 'currency':
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(Number(rawValue));
+
+                case 'percent':
+                    // Salesforce stores percent as the face number (15 = 15%)
+                    return new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 4
+                    }).format(Number(rawValue)) + '%';
+
+                case 'date': {
+                    // Salesforce returns dates as 'YYYY-MM-DD' strings
+                    const parts = String(rawValue).split('-');
+                    return new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    }).format(new Date(Date.UTC(
+                        parseInt(parts[0], 10),
+                        parseInt(parts[1], 10) - 1,
+                        parseInt(parts[2], 10)
+                    )));
+                }
+
+                case 'datetime':
+                    return new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }).format(new Date(rawValue));
+
+                case 'integer':
+                case 'long':
+                    return new Intl.NumberFormat('en-US', {
+                        maximumFractionDigits: 0
+                    }).format(Number(rawValue));
+
+                case 'double':
+                    return new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }).format(Number(rawValue));
+
+                default:
+                    return String(rawValue);
+            }
+        } catch (_) {
+            return String(rawValue);
+        }
+    }
+
     // ── Grid Overlay Helpers ──────────────────────────────────────────────────
 
     _hexToRgb(hex) {
@@ -439,8 +513,9 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
             const allFields = orderedFieldNames.map(fieldName => {
                 const label = this._fieldLabels[fieldName] || fieldName;
                 const rawValue = record[fieldName];
+                const fieldType = this._fieldTypes[fieldName] || '';
                 const displayValue = rawValue !== null && rawValue !== undefined
-                    ? String(rawValue)
+                    ? this._formatFieldValue(rawValue, fieldType)
                     : '';
                 const isBadge = badgeSet.has(fieldName.toLowerCase()) && displayValue !== '';
 
