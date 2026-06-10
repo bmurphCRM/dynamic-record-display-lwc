@@ -1,0 +1,226 @@
+<template>
+    <div class={containerClass} style={containerStyle}>
+
+        <!-- ── Component Header / Title ───────────────────────────────────── -->
+        <template if:true={hasTitle}>
+            <div class="drd-header">
+                <h2 class="drd-title">{componentTitle}</h2>
+            </div>
+        </template>
+
+        <!-- ── Initial Loading State ─────────────────────────────────────── -->
+        <template if:true={isLoading}>
+            <div class="drd-loading" role="status" aria-label="Loading records">
+                <div class="drd-spinner" aria-hidden="true">
+                    <div class="drd-spinner-ring"></div>
+                </div>
+                <p class="drd-loading-text">Loading records&#8230;</p>
+            </div>
+        </template>
+
+        <!-- ── Error State ────────────────────────────────────────────────── -->
+        <template if:true={hasError}>
+            <div class="drd-error" role="alert">
+                <span class="drd-error-icon" aria-hidden="true">&#9888;</span>
+                <p class="drd-error-message">{errorMessage}</p>
+            </div>
+        </template>
+
+        <!-- ── Empty State ────────────────────────────────────────────────── -->
+        <template if:true={showEmpty}>
+            <div class="drd-empty" role="status">
+                <span class="drd-empty-icon" aria-hidden="true">&#128269;</span>
+                <p class="drd-empty-message">No records found.</p>
+            </div>
+        </template>
+
+        <!-- ── Records Region ────────────────────────────────────────────── -->
+        <template if:true={showRecords}>
+
+            <!-- ══ LIST VIEW ═════════════════════════════════════════════════ -->
+            <template if:true={isListMode}>
+                <div class="drd-list-view" role="list">
+                    <template for:each={processedRecords} for:item="record">
+                        <div
+                            key={record.Id}
+                            class="drd-list-row"
+                            role="listitem"
+                            tabindex="0"
+                            data-id={record.Id}
+                            onclick={handleRecordClick}
+                            onkeydown={handleKeyDown}
+                        >
+                            <template for:each={record.fields} for:item="field">
+                                <div key={field.name} class="drd-list-field">
+                                    <span class="drd-field-label">{field.label}</span>
+                                    <template if:true={field.isBadge}>
+                                        <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                    </template>
+                                    <template if:true={field.isNotBadge}>
+                                        <span class="drd-field-value">{field.displayValue}</span>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ══ CARD VIEW ══════════════════════════════════════════════════ -->
+            <template if:true={isCardMode}>
+                <div class="drd-card-grid" role="list">
+                    <template for:each={processedRecords} for:item="record">
+                        <div
+                            key={record.Id}
+                            class="drd-card"
+                            role="listitem"
+                            tabindex="0"
+                            data-id={record.Id}
+                            onclick={handleRecordClick}
+                            onkeydown={handleKeyDown}
+                            aria-label={record.primaryValue}
+                        >
+                            <div class="drd-card-header">
+                                <h3 class="drd-card-title">{record.primaryValue}</h3>
+                            </div>
+                            <div class="drd-card-body">
+                                <template for:each={record.secondaryFields} for:item="field">
+                                    <div key={field.name} class="drd-card-field">
+                                        <span class="drd-field-label">{field.label}</span>
+                                        <template if:true={field.isBadge}>
+                                            <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                        </template>
+                                        <template if:true={field.isNotBadge}>
+                                            <span class="drd-field-value">{field.displayValue}</span>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="drd-card-footer">
+                                <span class="drd-card-cta" aria-hidden="true">View Details &#8250;</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ══ CAROUSEL VIEW ══════════════════════════════════════════════ -->
+            <template if:true={isCarouselMode}>
+                <div class="drd-carousel" role="region" aria-label={carouselAriaLabel}>
+                    <div class="drd-carousel-inner">
+                        <button
+                            class="drd-carousel-btn drd-carousel-prev"
+                            onclick={prevSlide}
+                            disabled={isPrevDisabled}
+                            aria-label="Previous slide"
+                        >&#8249;</button>
+
+                        <div class="drd-carousel-track-outer" aria-live="polite">
+                            <div class="drd-carousel-track" style={carouselTrackStyle}>
+                                <template for:each={processedRecords} for:item="record">
+                                    <div
+                                        key={record.Id}
+                                        class="drd-carousel-card"
+                                        tabindex="0"
+                                        data-id={record.Id}
+                                        onclick={handleRecordClick}
+                                        onkeydown={handleKeyDown}
+                                        aria-label={record.primaryValue}
+                                        role="button"
+                                    >
+                                        <div class="drd-card-header">
+                                            <h3 class="drd-card-title">{record.primaryValue}</h3>
+                                        </div>
+                                        <div class="drd-card-body">
+                                            <template for:each={record.secondaryFields} for:item="field">
+                                                <div key={field.name} class="drd-card-field">
+                                                    <span class="drd-field-label">{field.label}</span>
+                                                    <template if:true={field.isBadge}>
+                                                        <span class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                                    </template>
+                                                    <template if:true={field.isNotBadge}>
+                                                        <span class="drd-field-value">{field.displayValue}</span>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="drd-card-footer">
+                                            <span class="drd-card-cta" aria-hidden="true">View Details &#8250;</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <button
+                            class="drd-carousel-btn drd-carousel-next"
+                            onclick={nextSlide}
+                            disabled={isNextDisabled}
+                            aria-label="Next slide"
+                        >&#8250;</button>
+                    </div>
+
+                    <div class="drd-carousel-dots" role="tablist" aria-label="Slide indicators">
+                        <template for:each={carouselDots} for:item="dot">
+                            <button
+                                key={dot.index}
+                                class={dot.cssClass}
+                                data-index={dot.index}
+                                onclick={goToSlide}
+                                role="tab"
+                                aria-selected={dot.isActive}
+                                aria-label={dot.ariaLabel}
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ══ GRID VIEW (Image + Overlay) ════════════════════════════════ -->
+            <template if:true={isGridMode}>
+                <div class="drd-grid-view" role="list">
+                    <template for:each={processedRecords} for:item="record">
+                        <div
+                            key={record.Id}
+                            class="drd-grid-item"
+                            role="listitem"
+                            tabindex="0"
+                            data-id={record.Id}
+                            onclick={handleRecordClick}
+                            onkeydown={handleKeyDown}
+                            style={record.gridItemStyle}
+                            aria-label={record.primaryValue}
+                        >
+                            <div class="drd-grid-overlay" style={record.overlayStyle}>
+                                <div class="drd-grid-overlay-content">
+                                    <span class="drd-grid-title" style={overlayTextStyle}>{record.primaryValue}</span>
+                                    <template if:true={record.hasBadgeFields}>
+                                        <div class="drd-grid-badges">
+                                            <template for:each={record.badgeOnlyFields} for:item="field">
+                                                <span key={field.name} class="drd-badge" style={field.badgeStyle} title={field.displayValue}>{field.displayValue}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+        </template><!-- end showRecords -->
+
+        <!-- ── Load More ─────────────────────────────────────────────────── -->
+        <template if:true={showLoadMore}>
+            <div class="drd-load-more-wrapper">
+                <button
+                    class="drd-load-more-btn"
+                    onclick={handleLoadMore}
+                    disabled={isLoadingMore}
+                    aria-label="Load more records"
+                >{loadMoreLabel}</button>
+            </div>
+        </template>
+
+    </div>
+</template>

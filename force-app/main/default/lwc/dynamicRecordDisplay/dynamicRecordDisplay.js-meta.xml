@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default,lightning__AppPage,lightning__RecordPage,lightning__HomePage">
+
+            <!-- ── Display ─────────────────────────────────────────────── -->
+            <property
+                name="componentTitle"
+                type="String"
+                label="Component Title"
+                description="Optional heading displayed above the records."
+            />
+            <property
+                name="displayMode"
+                type="String"
+                label="Display Mode"
+                description="How records are displayed."
+                default="card"
+                datasource="list,card,carousel,grid"
+            />
+
+            <!-- ── Data Configuration ──────────────────────────────────── -->
+            <property
+                name="objectApiName"
+                type="String"
+                label="Object API Name"
+                description="API name of the Salesforce object to query (e.g. Account, Grant__c)."
+                required="true"
+            />
+            <property
+                name="fieldList"
+                type="String"
+                label="Fields to Display (CSV)"
+                description="Comma-separated field API names to show (e.g. Name,Status__c,Amount__c)."
+                required="true"
+            />
+            <property
+                name="primaryField"
+                type="String"
+                label="Primary / Title Field"
+                description="Field API name used as the bold title on each card or grid item (e.g. Name)."
+            />
+            <property
+                name="imageUrlField"
+                type="String"
+                label="Image URL Field (Grid View)"
+                description="Field API name whose value is an image URL for the grid view background."
+            />
+            <property
+                name="whereClause"
+                type="String"
+                label="WHERE Clause Filter"
+                description="Optional SOQL WHERE body to filter records (e.g. Status__c = 'Active'). Admin-configured only."
+            />
+            <property
+                name="orderByField"
+                type="String"
+                label="ORDER BY Field"
+                description="Field API name to sort records by (e.g. Name, CreatedDate)."
+            />
+            <property
+                name="orderByDirection"
+                type="String"
+                label="Sort Direction"
+                description="Sort direction for ORDER BY field."
+                default="ASC"
+                datasource="ASC,DESC"
+            />
+            <property
+                name="recordsPerPage"
+                type="Integer"
+                label="Records Per Page"
+                description="Number of records loaded per page (increments of this value on Load More). Default: 10."
+                default="10"
+                min="1"
+                max="200"
+            />
+
+            <!-- ── Theme ───────────────────────────────────────────────── -->
+            <property
+                name="colorTheme"
+                type="String"
+                label="Color Theme"
+                description="Select a preset color theme. Custom hex values below will override the selected theme."
+                default="ocean-blue"
+                datasource="ocean-blue,forest-green,sunset-orange,midnight-dark,clean-white,royal-purple,rose-gold,slate-gray,teal-breeze,coral-reef"
+            />
+            <property
+                name="accentColor"
+                type="String"
+                label="Accent Color (Hex)"
+                description="Custom hex color for buttons, borders, and highlights (e.g. #0070D2). Overrides theme."
+            />
+            <property
+                name="headerBgColor"
+                type="String"
+                label="Header Background Color (Hex)"
+                description="Custom hex color for the component header and card title bars (e.g. #032D60). Overrides theme."
+            />
+            <property
+                name="cardBgColor"
+                type="String"
+                label="Card Background Color (Hex)"
+                description="Custom hex color for card, list row, and grid backgrounds (e.g. #F0F8FF). Overrides theme."
+            />
+            <property
+                name="textColor"
+                type="String"
+                label="Text Color (Hex)"
+                description="Custom hex color for body text (e.g. #1A1A1A). Overrides theme."
+            />
+
+            <!-- ── Grid Overlay ────────────────────────────────────────── -->
+            <property
+                name="overlayBgColor"
+                type="String"
+                label="Grid Overlay Background Color (Hex)"
+                description="Background color of the image overlay in grid view (e.g. #000000)."
+                default="#000000"
+            />
+            <property
+                name="overlayTextColor"
+                type="String"
+                label="Grid Overlay Text Color (Hex)"
+                description="Text color for the record name shown over the image overlay (e.g. #FFFFFF)."
+                default="#FFFFFF"
+            />
+            <property
+                name="overlayOpacity"
+                type="Integer"
+                label="Grid Overlay Opacity (0–100)"
+                description="Opacity of the image overlay as a percentage. 0 = transparent, 100 = fully opaque."
+                default="60"
+                min="0"
+                max="100"
+            />
+            <property
+                name="overlayDirection"
+                type="String"
+                label="Grid Overlay Direction"
+                description="Overlay style: gradient from bottom-to-top or solid full-cover."
+                default="bottom-to-top"
+                datasource="bottom-to-top,full-cover"
+            />
+
+            <!-- ── Badges / Pills ──────────────────────────────────────── -->
+            <property
+                name="badgeFields"
+                type="String"
+                label="Badge Fields (CSV)"
+                description="Comma-separated field API names to render as colored badge pills (e.g. Status__c,Type)."
+            />
+            <property
+                name="badgeColorMap"
+                type="String"
+                label="Badge Color Overrides"
+                description="Optional value-to-color map for badges. Format: Active=#2E7D32,Closed=#C2185B,Pending=#E65100. Overrides auto-color."
+            />
+            <property
+                name="badgeStyle"
+                type="String"
+                label="Badge Style"
+                description="Filled: solid colored background with white text. Outlined: colored border and text on white background."
+                default="filled"
+                datasource="filled,outlined"
+            />
+
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
