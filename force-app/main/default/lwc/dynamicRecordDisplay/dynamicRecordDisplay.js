@@ -144,9 +144,22 @@ export default class DynamicRecordDisplay extends NavigationMixin(LightningEleme
 
         const pageLimit = parseInt(this.recordsPerPage, 10) || 10;
 
+        // Auto-include imageUrlField in the query if it isn't already listed,
+        // so the grid view works even when the admin only sets Image URL Field
+        // without also adding it to the Field List CSV.
+        let effectiveFieldList = this.fieldList;
+        if (this.imageUrlField) {
+            const existing = effectiveFieldList
+                .split(',')
+                .map(f => f.trim().toLowerCase());
+            if (!existing.includes(this.imageUrlField.trim().toLowerCase())) {
+                effectiveFieldList = effectiveFieldList + ',' + this.imageUrlField.trim();
+            }
+        }
+
         getRecords({
             objectApiName: this.objectApiName,
-            fieldListCsv: this.fieldList,
+            fieldListCsv: effectiveFieldList,
             whereClause: this.whereClause || null,
             orderByField: this.orderByField || null,
             orderByDir: this.orderByDirection || 'ASC',
