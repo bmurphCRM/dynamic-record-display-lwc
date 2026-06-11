@@ -1,6 +1,6 @@
 # Dynamic Record Display (`dynamicRecordDisplay`)
 
-> **Version:** 1.0.0 Brian Murphy (b.murphy@salesforce.com/b.murphy@rhtpgrants.demo) · **API Version:** 66.0 · **Platform:** Salesforce LWC (Aura-compatible)
+> **Version:** 1.0.0 Vive Coded w Agentforce Vibes by Brian Murphy (b.murphy@salesforce.com/b.murphy@rhtpgrants.demo) · **API Version:** 66.0 · **Platform:** Salesforce LWC (Aura-compatible)
 
 A fully configurable Lightning Web Component that renders records from **any Salesforce object** in four distinct display modes. Designed for Aura-based Experience Cloud communities, it supports system-level queries, rich theming, badge/pill overlays, and admin-driven configuration via Experience Builder — with no code changes required after deployment.<br><br>
 
