@@ -256,7 +256,7 @@ Fields listed in `badgeFields` (CSV) are rendered as colored pill-shaped `<span>
 #### Color Resolution Order
 
 1. **Override map** (`badgeColorMap`): check if `displayValue.toLowerCase()` matches a key  
-   - Format: `Active=#2E7D32,Closed=#C2185B,Pending=#E65100`  
+   - Format: `Active=#2E7D32,Closed=#C2185B,Pending=#E65100,Complete=Green,Open=Blue`  
    - Text contrast is auto-detected using relative luminance — dark bg → white text; light bg → `#1A1A1A` text
 2. **Hash auto-color**: deterministic hash of `displayValue` modulo 12 color palette
 
