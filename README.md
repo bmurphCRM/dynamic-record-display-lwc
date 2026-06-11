@@ -2,7 +2,10 @@
 
 > **Version:** 1.0.0 Brian Murphy (b.murphy@salesforce.com/b.murphy@rhtpgrants.demo) · **API Version:** 66.0 · **Platform:** Salesforce LWC (Aura-compatible)
 
-A fully configurable Lightning Web Component that renders records from **any Salesforce object** in four distinct display modes. Designed for Aura-based Experience Cloud communities, it supports system-level queries, rich theming, badge/pill overlays, and admin-driven configuration via Experience Builder — with no code changes required after deployment.
+A fully configurable Lightning Web Component that renders records from **any Salesforce object** in four distinct display modes. Designed for Aura-based Experience Cloud communities, it supports system-level queries, rich theming, badge/pill overlays, and admin-driven configuration via Experience Builder — with no code changes required after deployment.<br><br>
+
+<img width="1841" height="871" alt="image" src="https://github.com/user-attachments/assets/d6695a88-d729-42cb-9229-d604769598da" />
+
 
 ---
 
